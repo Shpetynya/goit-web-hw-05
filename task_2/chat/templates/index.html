@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">  <!-- относительный путь к CSS -->
+    <title>Chat</title>
+</head>
+<body>
+    <h1>Chat</h1>
+    <form id="formChat">
+        <input type="text" id="textField" placeholder="Type a message..." required />
+        <button type="submit">Send</button>
+    </form>
+    <div id="subscribe"></div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:6789');  // Підключення до WebSocket-сервера
+
+        formChat.addEventListener('submit', (e) => {
+            e.preventDefault();
+            ws.send(textField.value);
+            textField.value = '';
+        });
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket!');
+        };
+
+        ws.onmessage = (e) => {
+            const text = e.data;
+            const elMsg = document.createElement('div');
+            elMsg.textContent = text;
+            subscribe.appendChild(elMsg);
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed.');
+        };
+    </script>
+</body>
+</html>
